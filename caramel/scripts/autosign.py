@@ -78,15 +78,15 @@ def mainloop(delay, ca, delta):
                     logger.exception("Future failed")
 
 
-def cmdline():
+def cmdline(args):
     """Basically just parsing the arguments and returning them"""
     parser = argparse.ArgumentParser()
     config.add_inifile_argument(parser)
     config.add_db_url_argument(parser)
     parser.add_argument("--delay", help="How long to sleep. (ms)")
     parser.add_argument("--valid", help="How many hours the certificate is valid for")
-    args = parser.parse_args()
-    return args
+    parsed_args = parser.parse_args(args)
+    return parsed_args
 
 
 def error_out(message, closer):
@@ -96,14 +96,14 @@ def error_out(message, closer):
     sys.exit(1)
 
 
-def main():
+def main(args):
     """Main, as called from the script instance by pyramid"""
     logging.basicConfig()
     logger.setLevel(logging.DEBUG)
-    args = cmdline()
-    env = bootstrap(args.inifile)
+    parsed_args = cmdline(args)
+    env = bootstrap(parsed_args.inifile)
     settings, closer = env["registry"].settings, env["closer"]
-    db_url = config.get_db_url(args, settings)
+    db_url = config.get_db_url(parsed_args, settings)
     engine = create_engine(db_url)
     models.init_session(engine)
     delay = int(settings.get("delay", 500)) / 1000
@@ -122,3 +122,4 @@ def main():
 
 if __name__ == "__main__":
     logging.basicConfig()
+    main(sys.argv[1:])

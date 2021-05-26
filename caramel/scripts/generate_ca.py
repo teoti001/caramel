@@ -161,11 +161,11 @@ def write_files(key, keyname, cert, certname):
     writefile(_cert, certname)
 
 
-def cmdline():
+def cmdline(args):
     parser = argparse.ArgumentParser()
     config.add_inifile_argument(parser)
-    args = parser.parse_args()
-    return args
+    parsed_args = parser.parse_args(args)
+    return parsed_args
 
 
 def build_ca(keyname, certname):
@@ -192,9 +192,9 @@ def build_ca(keyname, certname):
     write_files(key=key, keyname=keyname, cert=cert, certname=certname)
 
 
-def main():
-    args = cmdline()
-    env = bootstrap(args.inifile)
+def main(args):
+    parsed_args = cmdline(args)
+    env = bootstrap(parsed_args.inifile)
     settings, closer = env["registry"].settings, env["closer"]
 
     ca_cert = settings.get("ca.cert")
@@ -222,3 +222,9 @@ def main():
     print("Will write cert to {}".format(ca_cert))
 
     build_ca(keyname=ca_key, certname=ca_cert)
+
+
+if __name__ == "__main__":
+    import sys
+
+    main(sys.argv[1:])
