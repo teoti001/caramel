@@ -28,7 +28,7 @@ stages:
 caramel:test:
   stage: test
   when: always
-  image: ${PYTHON_IMAGE}
+  image: ${BUILD_IMAGE}
   before_script:
     - pip3 install .
   script:
