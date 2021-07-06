@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # vim: expandtab shiftwidth=4 softtabstop=4 tabstop=17 filetype=python :
+# pylint: disable=no-member
 
 import sqlalchemy as _sa
 from sqlalchemy.ext.declarative import (
@@ -91,7 +92,7 @@ register(DBSession)
 @as_declarative()
 class Base(object):
     @_declared_attr
-    def __tablename__(cls):
+    def __tablename__(cls):  # pylint: disable=no-self-argument
         return cls.__name__.lower()
 
     id = _sa.Column(_sa.Integer, primary_key=True)
