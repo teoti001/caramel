@@ -3,8 +3,8 @@
 
 import sqlalchemy as _sa
 from sqlalchemy.ext.declarative import (
-    declarative_base as _declarative_base,
     declared_attr as _declared_attr,
+    as_declarative as as_declarative,
 )
 import sqlalchemy.orm as _orm
 from zope.sqlalchemy import register
@@ -88,6 +88,7 @@ DBSession = _orm.scoped_session(_orm.sessionmaker())
 register(DBSession)
 
 
+@as_declarative()
 class Base(object):
     @_declared_attr
     def __tablename__(cls):
@@ -106,10 +107,6 @@ class Base(object):
     @classmethod
     def all(cls):
         return cls.query().all()
-
-
-# XXX: Newer versions of sqlalchemy have a decorator variant 'as_declarative'
-Base = _declarative_base(cls=Base)
 
 
 # XXX: not the best of names
@@ -135,10 +132,10 @@ class CSR(Base):
     orgunit = _sa.Column(_sa.String(_UB_OU_LEN))
     commonname = _sa.Column(_sa.String(_UB_CN_LEN))
     rejected = _sa.Column(_sa.Boolean(create_constraint=True))
-    accessed = _orm.relationship(
+    accessed: _orm.RelationshipProperty = _orm.relationship(
         "AccessLog", backref="csr", order_by="AccessLog.when.desc()"
     )
-    certificates = _orm.relationship(
+    certificates: _orm.RelationshipProperty = _orm.relationship(
         "Certificate",
         backref="csr",
         order_by="Certificate.not_after.desc()",
